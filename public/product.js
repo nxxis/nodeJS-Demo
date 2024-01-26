@@ -1,4 +1,6 @@
 let products = [];
+let isEditMode = false;
+let editedIndex;
 
 /// selecting frontEnd elements
 const addButton = document.getElementById('add-product-button');
@@ -23,6 +25,7 @@ const handleSubmit = async () => {
     productDescription == ''
   ) {
     alert('Fields cannot be empty and price/quantity must be numbers.');
+    return;
   }
 
   const product = {
@@ -32,20 +35,25 @@ const handleSubmit = async () => {
     quantity: productQuantity,
   };
 
-  if (handleEdit) {
+  if (isEditMode) {
     try {
-      const editProduct = await axios.patch(`/products/${handleEdit._id}`);
+      const editProduct = await axios.patch(
+        `/products/${products[editedIndex]._id}`,
+        handleEdit
+      );
+
+      isEditMode = false;
+      editedIndex = undefined;
     } catch (error) {
       console.log(error);
     }
-  }
-
-  try {
-    const createProduct = await axios.post('/products', {
-      ...product,
-    });
-  } catch (error) {
-    console.log(error);
+  } else {
+    try {
+      // Add a new product
+      const createProduct = await axios.post('/products', { ...product });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   handleUpdate();
@@ -72,6 +80,11 @@ const handleUpdate = async () => {
   productList.innerHTML = '';
 
   for (let i = 0; i < products.length; i++) {
+    // Skip the product being edited in edit mode
+    if (isEditMode && i === editedIndex) {
+      continue;
+    }
+
     const product = products[i];
 
     const li = document.createElement('li');
@@ -106,6 +119,9 @@ const handleUpdate = async () => {
 // edit product
 const handleEdit = (index) => {
   const currentProduct = products[index];
+
+  isEditMode = true;
+  editedIndex = index;
 
   // Update the input fields with the current product information
   productNameInput.value = currentProduct.name;
