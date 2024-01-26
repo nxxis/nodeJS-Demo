@@ -39,7 +39,7 @@ const handleSubmit = async () => {
     try {
       const editProduct = await axios.patch(
         `/products/${products[editedIndex]._id}`,
-        handleEdit
+        product
       );
 
       isEditMode = false;
