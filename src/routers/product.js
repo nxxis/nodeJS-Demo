@@ -1,89 +1,25 @@
 const express = require('express');
-const Product = require('../models/product');
 const mongoose = require('../db/mongoose');
 const router = new express.Router();
+const {
+  createProduct,
+  fetchAllProducts,
+  fetchProductById,
+  updateProduct,
+  deleteProduct,
+  deleteAllProducts,
+} = require('../controllers/productController');
 
-// create product
-router.post('/products', async (req, res) => {
-  const product = new Product({
-    ...req.body,
-  });
-  try {
-    await product.save();
-    res.status(201).send(product);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
+router.post('/products', createProduct);
 
-// fetch all products
-router.get('/products', async (req, res) => {
-  try {
-    const products = await Product.find({});
-    if (!products) {
-      return res.status(404).send();
-    }
-    res.send(products);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
+router.get('/products', fetchAllProducts);
 
-// fetch product by id
-router.get('/products/:id', async (req, res) => {
-  const _id = req.params.id;
-  try {
-    const product = await Product.findById({ _id });
-    res.send(product);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+router.get('/products/:id', fetchProductById);
 
-// update product
-router.patch('/products/:id', async (req, res) => {
-  const _id = req.params.id;
+router.patch('/products/:id', updateProduct);
 
-  try {
-    const product = await Product.findByIdAndUpdate(
-      { _id },
-      {
-        ...req.body,
-      }
-    );
-    if (!product) {
-      return res.status(404).send();
-    }
-    await product.save();
-    res.send(product);
-  } catch (error) {
-    res.status(500).send();
-  }
-});
+router.delete('/products/:id', deleteProduct);
 
-// delete product
-router.delete('/products/:id', async (req, res) => {
-  const _id = req.params.id;
-
-  try {
-    const product = await Product.findByIdAndDelete({ _id });
-    if (!product) {
-      return res.status(404).send();
-    }
-    res.send(product);
-  } catch (error) {
-    res.status(500).send();
-  }
-});
-
-// delete all products
-router.delete('/products', async (req, res) => {
-  try {
-    const product = await Product.deleteMany({});
-    res.send();
-  } catch (error) {
-    res.status(400).send();
-  }
-});
+router.delete('/products', deleteAllProducts);
 
 module.exports = router;
