@@ -7,15 +7,9 @@ const createProduct = async (newProduct) => {
   return await product.save();
 };
 
-const fetchAllProducts = async () => {
-  const products = await Product.find({});
-  return products;
-};
+const fetchAllProducts = async () => await Product.find({});
 
-const fetchProductById = async (_id) => {
-  const product = await Product.findById({ _id });
-  return product;
-};
+const fetchProductById = async (_id) => await Product.findById({ _id });
 
 const updateProduct = async (_id, updatedProduct) => {
   const product = await Product.findByIdAndUpdate(
@@ -27,15 +21,9 @@ const updateProduct = async (_id, updatedProduct) => {
   return await product.save();
 };
 
-const deleteProduct = async (_id) => {
-  const product = await Product.findByIdAndDelete({ _id });
-  return product;
-};
+const deleteProduct = async (_id) => await Product.findByIdAndDelete({ _id });
 
-const deleteAllProducts = async () => {
-  const product = await Product.deleteMany({});
-  return product;
-};
+const deleteAllProducts = async () => await Product.deleteMany({});
 
 module.exports = {
   createProduct,
